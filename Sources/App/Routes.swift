@@ -28,13 +28,27 @@ extension Droplet {
         let vendings = try VendingController(log: self.log)
         vendings.addOpenRoutes(drop: self)
         vendings.addGroupedRoutes(group: tokenOnUsers)
+        
         let events = try EventController(log: self.log)
         events.addOpenRoutes(drop: self)
         events.addGroupedRoutes(group: tokenOnUsers)
+        events.addSpecificRoutes(router: self.router)
         
         let orders = try HireNow(log: self.log)
         orders.addOpenRoutes(drop: self)
         orders.addGroupedRoutes(group: tokenOnUsers)
+        
+        let jobs = try JobController(log: self.log)
+        jobs.addOpenRoutes(drop: self)
+        jobs.addGroupedRoutes(group: tokenOnUsers)
+        
+        let vendorRating = try VendorRatingController(log: self.log)
+        vendorRating.addOpenRoutes(drop: self)
+        vendorRating.addGroupedRoutes(group: tokenOnUsers)
+        
+        let bids = try BidController(log: self.log)
+        bids.addOpenRoutes(drop: self)
+        bids.addGroupedRoutes(group: tokenOnUsers)
         
         //let favorites = try FavoriteController(log: self.log)
         //favorites.addOpenRoutes(drop: self)

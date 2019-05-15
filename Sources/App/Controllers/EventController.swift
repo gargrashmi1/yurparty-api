@@ -15,9 +15,47 @@ final class EventController: Controlling {
     
     func addOpenRoutes(drop: Droplet) {
         drop.get("events") { req in return try self.get(req) }
+        
+        drop.get("eventsofuser") { req in return try self.getEventsOfUser(req) }
     }
     
-    
+    func addSpecificRoutes(router: Router) {
+        
+//        router.get("events/list", String.parameter) { req in
+//            print("============\n\(req)")
+//
+//
+//
+//            let lookupid = try req.parameters.next(String.self)
+//            guard let event = try Event.makeQuery()
+//                .filter(Event.DB.userIdKey.ⓡ, lookupid)
+//                .first()
+//                else {
+//                    throw Abort(.badRequest, reason: "Event list: \(lookupid) does not exist")
+//            }
+//            var json = JSON()
+//            try json.set("status", "ok")
+//            return try json.set("events", event)
+//        }
+        
+        
+        // Assume we are ignoring the country code for now
+        router.post("events/list") { req in
+            guard let json = req.json else { throw Abort(.badRequest, reason: "Missing JSON") }
+            let aUserID: String = try json.get(Event.DB.userIdKey.ⓡ)
+            
+            guard let user = try Event.makeQuery()
+                .filter(Event.DB.userIdKey.ⓡ, aUserID)
+                .first()
+                else {
+                    throw Abort(.badRequest, reason: "Event list: \(aUserID) does not exist")
+            }
+            
+            var userJSON = JSON()
+            try userJSON.set("EventList", user)
+            return userJSON
+        }
+    }
     
     func addGroupedRoutes(group: RouteBuilder) {
         group.post("events") { req in return try self.post(req) }
@@ -44,6 +82,23 @@ final class EventController: Controlling {
         try json.set("status", "ok")
         
         try json.set("events", eventQuery.all())
+        return json
+    }
+    
+    fileprivate func getEventsOfUser(_ req: Request) throws -> JSON {
+        print("getEventsOfUser ============\n\(req)")
+//        let lookupid = try req.parameters.next(String.self)
+        guard let eventQuery = try Event.makeQuery()
+            .filter(Event.DB.userIdKey.ⓡ, "31134d69-8914-46e6-98c2-4edd53690e1b")
+            .first()
+            else {
+                throw Abort(.badRequest, reason: " **** *** *** Event: a779bddb-5e14-4310-b0ca-cccbfab3d781 does not exist")
+        }
+
+        var json = JSON()
+        try json.set("status", "ok")
+        
+        try json.set("events", eventQuery)
         return json
     }
     

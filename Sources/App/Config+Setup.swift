@@ -43,6 +43,8 @@ extension Config {
         preparations.append(Service.self)
         preparations.append(Event.self)
         preparations.append(Order.self)
+        preparations.append(Job.self)
+        preparations.append(Bid.self)
         preparations.append(Pivot<User, Vending>.self)
         preparations.append(CascadeMigration.self)
         preparations.append(PlusOneMigration.self)
