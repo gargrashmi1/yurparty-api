@@ -21,32 +21,32 @@ final class EventController: Controlling {
     
     func addSpecificRoutes(router: Router) {
         
-//        router.get("events/list", String.parameter) { req in
-//            print("============\n\(req)")
-//
-//
-//
-//            let lookupid = try req.parameters.next(String.self)
-//            guard let event = try Event.makeQuery()
-//                .filter(Event.DB.userIdKey.ⓡ, lookupid)
-//                .first()
-//                else {
-//                    throw Abort(.badRequest, reason: "Event list: \(lookupid) does not exist")
-//            }
-//            var json = JSON()
-//            try json.set("status", "ok")
-//            return try json.set("events", event)
-//        }
+        router.get("events/list", String.parameter) { req in
+            print("============\n\(req)")
+
+            let lookupid = try req.parameters.next(String.self)
+            guard let event : [Event] = try Event.makeQuery()
+                .filter(Event.DB.userIdKey.ⓡ, lookupid)
+                .all()
+                else {
+                    throw Abort(.badRequest, reason: "Event list: \(lookupid) does not exist")
+            }
+            var json = JSON()
+            try json.set("status", "ok")
+            try json.set("events", event)
+            return json
+        }
         
         
-        // Assume we are ignoring the country code for now
+        //-------------------
+        
         router.post("events/list") { req in
             guard let json = req.json else { throw Abort(.badRequest, reason: "Missing JSON") }
             let aUserID: String = try json.get(Event.DB.userIdKey.ⓡ)
             
-            guard let user = try Event.makeQuery()
+            guard let user : [Event]  = try Event.makeQuery()
                 .filter(Event.DB.userIdKey.ⓡ, aUserID)
-                .first()
+                .all()
                 else {
                     throw Abort(.badRequest, reason: "Event list: \(aUserID) does not exist")
             }

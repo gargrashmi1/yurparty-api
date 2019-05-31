@@ -30,7 +30,7 @@ final class Bid: Model, Timestampable {
         case cost = "cost"
         case jobIdKey = "job_id"
         case vendingIdKey = "vending_id"
-//        case vending
+        case vending
     }
     
     init(id: String? = nil, jobId: Identifier, vendingId: Identifier, eventId: Identifier, cost: String, status: String) throws {
@@ -70,6 +70,12 @@ final class Bid: Model, Timestampable {
 extension Bid {
     var owner: Parent<Bid, Job> {
         return parent(id: jobId)
+    }
+}
+
+extension Bid {
+    var vending: Parent<Bid, Vending> {
+        return parent(id: vendingId)
     }
 }
 
@@ -167,7 +173,7 @@ extension Bid: JSONConvertible {
         try json.set(DB.eventIdKey.ⓡ, eventId)
         try json.set(DB.status.ⓡ, status)
         try json.set(DB.cost.ⓡ, cost)
-//        try json.set(DB.vending.ⓡ, vending.all())
+        try json.set(DB.vending.ⓡ, vending.all())
         print("bid sent is", json)
         return json
     }

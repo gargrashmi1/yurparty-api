@@ -113,6 +113,12 @@ extension Vending {
     }
 }
 
+extension Vending {
+    var bids: Children<Vending, Bid> {
+        return children()
+    }
+}
+
 //extension Vending {
 //    var ownerAAA: Parent<Vending, Bid> {
 //        return parent(id: id)

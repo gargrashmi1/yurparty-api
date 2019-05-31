@@ -4,7 +4,7 @@
 //
 import Foundation
 import Vapor
-
+import VaporAPNS
 final class AuthController: Controlling {
     fileprivate let client: ClientFactoryProtocol
     fileprivate let log: LogProtocol
@@ -18,9 +18,13 @@ final class AuthController: Controlling {
         // Assume we are ignoring the country code for now
         router.post("auth/verify") { req in
             guard let json = req.json else { throw Abort(.badRequest, reason: "Missing JSON") }
+            
+            print("request: \(req)")
+            
             let phone: String = try json.get(User.DB.phone.ⓡ)
             let passcode: String = try json.get("passcode")
-
+            let devieToken: String = try json.get("deviceToken")
+            
             guard let user = try User.makeQuery()
                 .filter(User.DB.phone.ⓡ, phone)
                 .first()
@@ -31,8 +35,13 @@ final class AuthController: Controlling {
             else {
                 throw Abort(.badRequest, reason: "FAIL: User Validation")
             }
-            let token = try Token.generate(for: user)
+            
+            let token = try Token.generate(for: user, aDeviceToken: devieToken)
             try token.save()
+            
+
+            
+            
             var userJSON = JSON()
             try userJSON.set("user", user)
             try userJSON.set("token", token.token)
@@ -46,12 +55,15 @@ final class AuthController: Controlling {
             let phone: String = try json.get(User.DB.phone.ⓡ)
             if phone.count < 10 { throw Abort(.badRequest, reason: "Not a valid Phone Number") }
             if let user = try self.userFor(phone: phone) { return try self.smsSendFor(user: user) }
+            
+            
             return try self.postUser(req: req)
         }
 
         router.post("fbauth") { req in
             guard let json = req.json else { throw Abort(.badRequest, reason: "Missing JSON") }
             let facebookID: String = try json.get(User.DB.facebookID.ⓡ)
+            let devieToken: String = try json.get("deviceToken")
             // I don't know what a valid length should be
             if facebookID.count < 4 { throw Abort(.badRequest, reason: "Not a valid FacebookID") }
             var user: User?
@@ -64,7 +76,7 @@ final class AuthController: Controlling {
             guard let validUser = user else {
                 throw Abort(.badRequest, reason: "Unable to find or create User")
             }
-            let token = try Token.generate(for: validUser)
+            let token = try Token.generate(for: validUser, aDeviceToken: devieToken)
             try token.save()
             var userJSON = JSON()
             try userJSON.set("user", validUser)

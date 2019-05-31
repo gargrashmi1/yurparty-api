@@ -123,6 +123,12 @@ extension Job {
     }
 }
 
+//extension Job {
+//    var notification: Children<Job, Notification> {
+//        return children()
+//    }
+//}
+
 extension Job: ResponseRepresentable { }
 //extension Vending: JSONRepresentable {}
 

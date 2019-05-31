@@ -47,6 +47,17 @@ final class BidController: Controlling {
         return json
     }
    
+    fileprivate func getVendorsOfBid(_ req: Request) throws -> JSON {
+        
+        let bidQuery = try Bid.makeQuery()
+        
+        var json = JSON()
+        try json.set("status", "ok")
+        
+        try json.set("Bids", bidQuery.all())
+        return json
+    }
+    
     fileprivate func post(_ req: Request) throws -> JSON {
         //log.error("• in vendings.post()\n\(req)")
         guard let json = req.json else { throw Abort(.badRequest, reason: "No JSON in bid post") }

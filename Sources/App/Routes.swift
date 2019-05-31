@@ -2,10 +2,35 @@ import Foundation
 import Vapor
 import AuthProvider
 import S3SignerAWS
+import VaporAPNS
 
 extension Droplet {
 
+    
+    fileprivate func sendPushNotification() throws{
+        
+        
+        let folderPath = #file.components(separatedBy: "/").dropLast().joined(separator: "/")
+        let filePath = "\(folderPath)/AuthKey_CNQ574ZKF6.p8"
+        
+        
+        let options = try! Options(topic: Constants.AppBundleIdentifier, teamId: Constants.DeveloperAccount.TeamId, keyId: Constants.DeveloperAccount.APNS_Key_Id, keyPath: filePath)
+        let vaporAPNS = try VaporAPNS(options: options)
+        let payload = Payload(title: "Hello!", body: "App Started. APNS working fine :)")
+        
+        let pushMessage = ApplePushMessage(topic: nil, priority: .immediately, payload: payload, sandbox: true)
+        let result = vaporAPNS.send(pushMessage, to: "1b46ce94778d8237a0a86fcdcf7796ccfcd3bb364d936963a39822cb0d4c32a2")
+        
+        print("result_sendPushNotification : \(result)")
+        
+    }
+    
     func setupRoutes() throws {
+        
+        
+        try sendPushNotification()
+  
+        
         // MARK: - Debug
         get("info") { req in
             let debugInfo = try Utility.info(droplet: self)
@@ -49,6 +74,11 @@ extension Droplet {
         let bids = try BidController(log: self.log)
         bids.addOpenRoutes(drop: self)
         bids.addGroupedRoutes(group: tokenOnUsers)
+        
+        let notifications = try NotificationController(log: self.log)
+        notifications.addOpenRoutes(drop: self)
+        notifications.addGroupedRoutes(group: tokenOnUsers)
+        
         
         //let favorites = try FavoriteController(log: self.log)
         //favorites.addOpenRoutes(drop: self)
