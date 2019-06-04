@@ -92,7 +92,7 @@ final class JobController: Controlling {
         }*/
         
         print("test0001")
-        try sendPushNotification()
+        try sendPushNotification(req)
         print("test0002")
         
         
@@ -136,7 +136,7 @@ final class JobController: Controlling {
     }
     
     
-    fileprivate func sendPushNotification() throws{
+    fileprivate func sendPushNotification(_ req: Request) throws{
         //--------
         print("test0003")
 
@@ -147,28 +147,43 @@ final class JobController: Controlling {
         let options = try! Options(topic: Constants.AppBundleIdentifier, teamId: Constants.DeveloperAccount.TeamId, keyId: Constants.DeveloperAccount.APNS_Key_Id, keyPath: filePath)
         let vaporAPNS = try VaporAPNS(options: options)
         print("test0004")
-        let payload = Payload(title: "Title", body: "Your push message comes here")
+        let payload = Payload(title: "Events near you!", body: "New event posted near you!")
         
         let pushMessage = ApplePushMessage(topic: nil, priority: .immediately, payload: payload, sandbox: true)
         print("test0005")
-        let result = vaporAPNS.send(pushMessage, to: "1b46ce94778d8237a0a86fcdcf7796ccfcd3bb364d936963a39822cb0d4c32a2")
+//        let result = vaporAPNS.send(pushMessage, to: "1BCD7FC189EEB4AB49DDFFA20EBB2FCC67CD5DA86FFF49EA9CE8C92C7943A2BA")
         
-        print("result_sendPushNotification : \(result)")
+//        print("result_sendPushNotification : \(result)")
         
         //---------
 
-          let atokenQuery = try Token.makeQuery()
-        print("atokenQuery: \(try atokenQuery.all())")
+        
+        guard let tokenQuery : [DeviceToken] = try DeviceToken.makeQuery()
+            .join(kind: .inner, Vending.self, baseKey: "user_id", joinedKey: "user_id")
+            .all()
+            else {
+                throw Abort(.badRequest, reason: "tokenQuery does not exist")
+        }
+
+        print(tokenQuery)
+        
+        var array_tokens = [String]()
+        for aData in tokenQuery {
+            print("aTken >>>>> \(aData.dToken)")
+            array_tokens.append(aData.dToken)
+        }
+        
+        print("array_token: \(array_tokens)")
+        
+        vaporAPNS.send(pushMessage, to: array_tokens) { result in
+            print(result)
+            if case let .success(messageId,deviceToken,serviceStatus) = result, case .success = serviceStatus {
+                print ("Success!")
+                print("messageId: \(messageId)  |||  deviceToken: \(deviceToken)  |||  serviceStatus:\(serviceStatus)")
+            }
+        }
         
         
-//        guard let tokenQuery : [AnyObject] = try Token.makeQuery()
-//            .join(kind: .inner, Token.self, baseKey: "user_id", joinedKey: "user_id")
-//            .all()
-//            else {
-//                throw Abort(.badRequest, reason: "tokenQuery does not exist")
-//        }
-//
-//        print(tokenQuery)
         
         //---------
         

@@ -24,6 +24,7 @@ final class AuthController: Controlling {
             let phone: String = try json.get(User.DB.phone.ⓡ)
             let passcode: String = try json.get("passcode")
             let devieToken: String = try json.get("deviceToken")
+            let devieType: String = try json.get("deviceType")
             
             guard let user = try User.makeQuery()
                 .filter(User.DB.phone.ⓡ, phone)
@@ -40,6 +41,9 @@ final class AuthController: Controlling {
             try token.save()
             
 
+            let objDeviceToken = try DeviceToken.generate(for: user, aDeviceToken: devieToken, aDeviceType: devieType)
+
+            try objDeviceToken.save()
             
             
             var userJSON = JSON()

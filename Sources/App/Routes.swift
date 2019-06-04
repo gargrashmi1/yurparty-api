@@ -10,7 +10,7 @@ extension Droplet {
     fileprivate func sendPushNotification() throws{
         
         
-        let folderPath = #file.components(separatedBy: "/").dropLast().joined(separator: "/")
+       /* let folderPath = #file.components(separatedBy: "/").dropLast().joined(separator: "/")
         let filePath = "\(folderPath)/AuthKey_CNQ574ZKF6.p8"
         
         
@@ -19,9 +19,17 @@ extension Droplet {
         let payload = Payload(title: "Hello!", body: "App Started. APNS working fine :)")
         
         let pushMessage = ApplePushMessage(topic: nil, priority: .immediately, payload: payload, sandbox: true)
-        let result = vaporAPNS.send(pushMessage, to: "1b46ce94778d8237a0a86fcdcf7796ccfcd3bb364d936963a39822cb0d4c32a2")
+        let result = vaporAPNS.send(pushMessage, to: "1BCD7FC189EEB4AB49DDFFA20EBB2FCC67CD5DA86FFF49EA9CE8C92C7943A2BA")
         
         print("result_sendPushNotification : \(result)")
+        
+        vaporAPNS.send(pushMessage, to: ["1BCD7FC189EEB4AB49DDFFA20EBB2FCC67CD5DA86FFF49EA9CE8C92C7943A2BA", "DDA1DF956B75D795C65CE2DCD5E2464FD8BDF748EFBEC2990BD100E9DF9C7F9F"]) { result in
+            print(result)
+            if case let .success(messageId,deviceToken,serviceStatus) = result, case .success = serviceStatus {
+                print ("Success!")
+                print("messageId: \(messageId)  |||  deviceToken: \(deviceToken)  |||  serviceStatus:\(serviceStatus)")
+            }
+        }*/
         
     }
     

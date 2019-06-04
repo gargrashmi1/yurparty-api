@@ -121,6 +121,13 @@ extension User {
         return siblings()
     }
 }
+
+//extension User {
+//    var deviceToken: Children<User, DeviceToken> {
+//        return children()
+//    }
+//}
+
 /*
 extension User {
     var favorites: Children<User, Favorite> {
