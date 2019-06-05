@@ -10,6 +10,9 @@ import VaporAPNS
 import FluentProvider
 import Fluent
 
+
+
+
 final class JobController: Controlling {
     fileprivate let log: LogProtocol
     
@@ -76,7 +79,7 @@ final class JobController: Controlling {
         try jobJSON.set("job", job)
         
 
-        try sendPushNotification(req)
+        try sendPushNotification(req, job)
         
         
         //----------------------
@@ -119,7 +122,7 @@ final class JobController: Controlling {
     }
     
     
-    fileprivate func sendPushNotification(_ req: Request) throws{
+    fileprivate func sendPushNotification(_ req: Request, _ job: Job) throws{
 
         let folderPath = #file.components(separatedBy: "/").dropLast().joined(separator: "/")
         let filePath = "\(folderPath)/AuthKey_CNQ574ZKF6.p8"
@@ -142,6 +145,8 @@ final class JobController: Controlling {
         for aData in tokenQuery {
             print("aTken >>>>> \(aData.dToken)")
             array_tokens.append(aData.dToken)
+
+            
         }
         
         vaporAPNS.send(pushMessage, to: array_tokens) { result in
@@ -149,8 +154,20 @@ final class JobController: Controlling {
             if case let .success(messageId,deviceToken,serviceStatus) = result, case .success = serviceStatus {
                 print ("Success!")
                 print("messageId: \(messageId)  |||  deviceToken: \(deviceToken)  |||  serviceStatus:\(serviceStatus)")
+                
+                
+                aaa(job, payload, deviceToken)
+                
+                
             }
         }
+        
+    }
+    
+    fileprivate func aaa(_ job: Job, _ payload: Payload, _ deviceToken: String )  {
+        
+        let objNotification = try? Notification(id: UUID().uuidString, jobId: job.id!, title: payload.title!, desc: payload.body!, status: "1", fromUserId: job.userId, to: deviceToken, type: "1")
+        try? objNotification?.save()
     }
     
 }
