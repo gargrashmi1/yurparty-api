@@ -10,9 +10,6 @@ import VaporAPNS
 import FluentProvider
 import Fluent
 
-
-
-
 final class JobController: Controlling {
     fileprivate let log: LogProtocol
     
@@ -74,16 +71,26 @@ final class JobController: Controlling {
         } catch let error as Debuggable {
             throw Abort(.badRequest, reason: error.reason, identifier: error.identifier)
         }
+        
+        
+        let aaaaaNtest = try Ntest(id: UUID().uuidString, jobId: "80d1a5ad-7db1-448c-893a-edc3ec0044bd", title: "vvk", descrption: "tet0001", status: "1", fromUserId: job.userId, to: "A9E4BA49D51B9EBF378D4D23F06DD3260963C5618D6BF0FC45A027902AD77795", type: "1")
+        
+        
+        
+        do {
+            try aaaaaNtest.save()
+        } catch let error as Debuggable {
+            throw Abort(.badRequest, reason: error.reason, identifier: error.identifier)
+        }
+        
         var jobJSON = JSON()
         try jobJSON.set("status", "ok")
         try jobJSON.set("job", job)
         
-
         try sendPushNotification(req, job)
-        
-        
         //----------------------
         
+
         return jobJSON
     }
     
@@ -156,18 +163,18 @@ final class JobController: Controlling {
                 print("messageId: \(messageId)  |||  deviceToken: \(deviceToken)  |||  serviceStatus:\(serviceStatus)")
                 
                 
-                aaa(job, payload, deviceToken)
+                saveNotification(job, payload, deviceToken)
                 
                 
             }
         }
-        
     }
     
-    fileprivate func aaa(_ job: Job, _ payload: Payload, _ deviceToken: String )  {
+    fileprivate func saveNotification(_ job: Job, _ payload: Payload, _ deviceToken: String )  {
         
-        let objNotification = try? Notification(id: UUID().uuidString, jobId: job.id!, title: payload.title!, desc: payload.body!, status: "1", fromUserId: job.userId, to: deviceToken, type: "1")
-        try? objNotification?.save()
+        let objNtest = try? Ntest(id: UUID().uuidString, jobId: job.id!, title: payload.title!, descrption: payload.body!, status: "1", fromUserId: job.userId, to: deviceToken, type: "1")
+        try? objNtest?.save()
+        print(objNtest)
     }
     
 }

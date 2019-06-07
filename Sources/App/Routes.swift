@@ -60,11 +60,6 @@ extension Droplet {
         bids.addOpenRoutes(drop: self)
         bids.addGroupedRoutes(group: tokenOnUsers)
         
-        let notifications = try NotificationController(log: self.log)
-        notifications.addOpenRoutes(drop: self)
-        notifications.addGroupedRoutes(group: tokenOnUsers)
-        
-        
         //let favorites = try FavoriteController(log: self.log)
         //favorites.addOpenRoutes(drop: self)
         //favorites.addGroupedRoutes(group: tokenOnUsers)

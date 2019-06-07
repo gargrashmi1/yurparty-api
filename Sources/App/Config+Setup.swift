@@ -46,7 +46,8 @@ extension Config {
         preparations.append(Order.self)
         preparations.append(Job.self)
         preparations.append(Bid.self)
-        preparations.append(Notification.self)
+        preparations.append(Ntest.self)
+       
 //        preparations.append(DeviceToken.self)
         preparations.append(DeviceToken.self)
         preparations.append(Pivot<User, Vending>.self)
