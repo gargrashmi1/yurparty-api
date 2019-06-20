@@ -44,6 +44,7 @@ final class EventController: Controlling {
             guard let json = req.json else { throw Abort(.badRequest, reason: "Missing JSON") }
             let aUserID: String = try json.get(Event.DB.userIdKey.ⓡ)
             
+            
             guard let events : [Event]  = try Event.makeQuery()
                 .filter(Event.DB.userIdKey.ⓡ, aUserID)
                 .all()
