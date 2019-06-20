@@ -5,6 +5,8 @@
 import Foundation
 import Vapor
 import VaporAPNS
+import Stripe
+
 final class AuthController: Controlling {
     fileprivate let client: ClientFactoryProtocol
     fileprivate let log: LogProtocol
@@ -37,15 +39,24 @@ final class AuthController: Controlling {
                 throw Abort(.badRequest, reason: "FAIL: User Validation")
             }
             
+            //Create Stripe User from here
+            if user.stripeCustomer_id == nil || user.stripeCustomer_id == ""{
+                let stripeClient = try StripeClient(apiKey: Constants.publishableKey)
+                stripeClient.initializeRoutes()
+                
+                let createCustomer = try stripeClient.customer.create(email: user.phone)
+                let customer = try createCustomer.serializedResponse()
+                print(customer)
+                user.stripeCustomer_id = customer.id
+                try! user.save()
+            }
+
             let token = try Token.generate(for: user, aDeviceToken: devieToken)
             try token.save()
             
-
             let objDeviceToken = try DeviceToken.generate(for: user, aDeviceToken: devieToken, aDeviceType: devieType)
-
             try objDeviceToken.save()
-            
-            
+
             var userJSON = JSON()
             try userJSON.set("user", user)
             try userJSON.set("token", token.token)
@@ -133,6 +144,17 @@ extension AuthController {
         let user: User
         do { user = try User(json: json) }
         catch { throw Abort(.badRequest, reason: "Incorrect JSON") }
+        
+        //Create Stripe User from here
+        let stripeClient = try StripeClient(apiKey: Constants.publishableKey)
+        stripeClient.initializeRoutes()
+        
+        let createCustomer = try stripeClient.customer.create(email: user.phone)
+        let customer = try createCustomer.serializedResponse()
+        print(customer)
+        user.stripeCustomer_id = customer.id
+
+        
         return try smsSendFor(user: user)
     }
 

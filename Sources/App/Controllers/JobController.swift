@@ -139,8 +139,7 @@ final class JobController: Controlling {
         let payload = Payload(title: "Events near you!", body: "New event posted near you!")
         
         let pushMessage = ApplePushMessage(topic: nil, priority: .immediately, payload: payload, sandbox: true)
-        
-        
+
         guard let tokenQuery : [DeviceToken] = try DeviceToken.makeQuery()
             .join(kind: .inner, Vending.self, baseKey: "user_id", joinedKey: "user_id")
             .all()

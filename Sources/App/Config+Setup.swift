@@ -2,7 +2,7 @@ import FluentProvider
 import PostgreSQLProvider
 import AuthProvider
 import VaporS3Signer
-//import StripeProvider
+import Stripe
 
 extension Config {
     public func setup() throws {
@@ -58,14 +58,4 @@ extension Config {
         preparations.append(PostalCodeMigration.self)
     }
     
-    
-    /// Stripe Configure providers
-//    private func setupStripeProviders() throws {
-//
-//        let config = StripeConfig(productionKey: "sk_live_1234", testKey: "sk_test_1234")
-//
-//        services.register(config)
-//        try services.register(StripeProvider())
-//
-//    }
 }

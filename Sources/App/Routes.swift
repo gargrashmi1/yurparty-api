@@ -34,7 +34,9 @@ extension Droplet {
         tokenOnUsers.resource("users", users)
         //resource("favorites", users)
         users.addRoutes(drop: self)
+        users.addCardRoutes(drop: self)
         users.addGroupedRoutes(group: tokenOnUsers)
+        
         let vendings = try VendingController(log: self.log)
         vendings.addOpenRoutes(drop: self)
         vendings.addGroupedRoutes(group: tokenOnUsers)

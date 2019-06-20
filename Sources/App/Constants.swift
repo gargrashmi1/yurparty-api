@@ -20,5 +20,8 @@ struct Constants {
     //Cell Identifiers
     static let Identifier_ServiceTableViewCell = "ServiceTableViewCell"
     
+    //Stripe Key
+    static let publishableKey = "sk_test_WmKYSgS4e6okK0P6imL640N9"
+    
 }
 
