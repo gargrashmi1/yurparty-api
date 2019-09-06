@@ -23,9 +23,6 @@ import VaporAPNS
 /// .run() runs the Droplet's commands,
 /// if no command is given, it will default to "serve"
 
-
-
-
 let config = try Config()
 try config.setup()
 let drop = try Droplet(config)
@@ -35,12 +32,9 @@ drop.get { req in
     return try drop.view.make("Welcome",[
         "message": "Welcome"])
 }
+
 try drop.run()
 
-/*
- var options = try! Options(topic: "<your topic>", teamId: "<your teamId>", keyId: "<your keyId>", keyPath: "<your path to key>")
- options.forceCurlInstall = true
- 
- */
+
 
 
